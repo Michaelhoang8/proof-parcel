@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Proof Parcel · A claim you can check</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/"><span>▱</span> PROOF PARCEL</a
+      ><span>CRYPTOGRAPHIC INCLUSION / SHA-256</span
+      ><a href="https://github.com/Michaelhoang8/proof-parcel">Source ↗</a>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">SEND THE PROOF. KEEP THE TRUST SEPARATE.</p>
+          <h1>A claim you can check.</h1>
+        </div>
+        <p>
+          A small Merkle-tree workbench.<br />One record, a short path,<br />and a checkpoint you
+          choose.
+        </p>
+      </section>
+      <div class="workbench">
+        <section class="builder">
+          <div class="section-heading">
+            <h2>01 / Pack the records</h2>
+            <span id="leaf-count">—</span>
+          </div>
+          <ol id="leaves" class="leaves"></ol>
+          <details>
+            <summary>Edit the record collection</summary>
+            <label for="records">JSON array of exact strings</label
+            ><textarea id="records" rows="12" maxlength="600000" spellcheck="false"></textarea>
+            <p class="help">
+              Up to 128 records, each at most 4,096 UTF-8 bytes. Order, spaces, and Unicode
+              representation matter. Empty strings are valid records.
+            </p>
+            <div class="actions">
+              <button id="build" class="primary">Rebuild tree →</button
+              ><button id="reset">Load example</button>
+            </div>
+          </details>
+          <p id="build-notice" role="status" aria-live="polite"></p>
+          <div class="checkpoint-card">
+            <p class="eyebrow">CURRENT TREE CHECKPOINT</p>
+            <code id="tree-root">Computing…</code>
+            <p class="help" id="tree-shape"></p>
+            <div class="actions">
+              <button id="trust" disabled>Use this checkpoint →</button
+              ><button id="save-checkpoint" disabled>Export checkpoint ↓</button>
+            </div>
+            <p class="help">
+              Rebuilding the tree does not replace the verifier’s trusted checkpoint.
+            </p>
+          </div>
+        </section>
+        <section class="verifier">
+          <div class="section-heading">
+            <h2>02 / Check the claim</h2>
+            <span id="proof-summary">—</span>
+          </div>
+          <form id="verify-form">
+            <label for="trusted-root">Trusted root hash</label
+            ><input
+              id="trusted-root"
+              maxlength="64"
+              spellcheck="false"
+              autocomplete="off"
+              required
+            />
+            <div class="trusted-row">
+              <label
+                >Trusted tree size<input
+                  id="trusted-size"
+                  type="number"
+                  min="0"
+                  max="128"
+                  step="1"
+                  value="5"
+                  required
+              /></label>
+              <p class="help">
+                Obtain both values from a source you trust. A proof cannot establish their
+                authenticity.
+              </p>
+            </div>
+            <details id="proof-editor">
+              <summary>Inspect or replace the proof JSON</summary>
+              <label class="sr-only" for="proof">Inclusion proof JSON</label
+              ><textarea id="proof" rows="12" maxlength="30000" spellcheck="false"></textarea
+              ><label class="file-label"
+                >Import proof<input id="import" type="file" accept=".json,application/json"
+              /></label>
+              <p class="help">Importing a proof leaves the trusted root and size untouched.</p>
+            </details>
+            <button id="verify" class="primary">Verify inclusion →</button>
+          </form>
+          <div id="verdict" class="verdict pending">
+            <div class="stamp" id="stamp">—</div>
+            <div>
+              <h3 id="verdict-title">Preparing the example.</h3>
+              <p id="verdict-text"></p>
+            </div>
+          </div>
+          <p id="verify-notice" role="status" aria-live="polite"></p>
+          <div class="actions proof-actions">
+            <button id="tamper" disabled>Alter the leaf & verify</button
+            ><button id="restore" disabled>Restore selected proof</button
+            ><button id="save-proof" disabled>Export proof ↓</button>
+          </div>
+          <details>
+            <summary>Inspect the reconstructed hash path</summary>
+            <div id="hash-path"></div>
+          </details>
+        </section>
+      </div>
+      <section class="notes">
+        <h2>Membership is a claim.<br />Trust is a separate choice.</h2>
+        <div>
+          <p>
+            Leaves hash as SHA-256(0x00 || UTF-8 record). Internal nodes hash as SHA-256(0x01 ||
+            left hash || right hash). Uneven trees split at the largest power of two below their
+            size; no leaf is duplicated to fill a level.
+          </p>
+          <p>
+            The proof carries a record, its index, the tree size, and sibling hashes. The verifier
+            derives left/right directions from the index and size, reconstructs the root, and checks
+            it against your separate checkpoint.
+          </p>
+          <p>
+            A matching inclusion proof does not identify a publisher, establish a timestamp, or
+            prove that successive trees are append-only. This workbench does not implement
+            signatures or consistency proofs.
+          </p>
+          <a href="https://www.rfc-editor.org/info/rfc6962/">Read the Merkle-tree definitions ↗</a>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <span>EXACT BYTES. EXPLICIT TRUST.</span
+      ><span>Web Crypto · local computation · no uploads</span>
+    </footer>
+  </body>
+</html>
