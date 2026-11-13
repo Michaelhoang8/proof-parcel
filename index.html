@@ -3,31 +3,24 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Proof Parcel · A claim you can check</title>
+    <title>Proof Parcel</title>
     <link rel="stylesheet" href="/style.css" />
     <script type="module" src="/app.js"></script>
   </head>
   <body>
     <header>
-      <a class="brand" href="/"><span>▱</span> PROOF PARCEL</a
-      ><span>CRYPTOGRAPHIC INCLUSION / SHA-256</span
-      ><a href="https://github.com/Michaelhoang8/proof-parcel">Source ↗</a>
+      <h1>Proof Parcel</h1>
+      <nav aria-label="Workspace">
+        <button data-view="verifier" aria-pressed="true">Verify proof</button
+        ><button data-view="builder" aria-pressed="false">Build tree</button>
+      </nav>
+      <a href="https://github.com/Michaelhoang8/proof-parcel">Source</a>
     </header>
     <main>
-      <section class="intro">
-        <div>
-          <p class="eyebrow">SEND THE PROOF. KEEP THE TRUST SEPARATE.</p>
-          <h1>A claim you can check.</h1>
-        </div>
-        <p>
-          A small Merkle-tree workbench.<br />One record, a short path,<br />and a checkpoint you
-          choose.
-        </p>
-      </section>
       <div class="workbench">
-        <section class="builder">
+        <section class="builder" id="builder-view" hidden>
           <div class="section-heading">
-            <h2>01 / Pack the records</h2>
+            <h2>Record collection</h2>
             <span id="leaf-count">—</span>
           </div>
           <ol id="leaves" class="leaves"></ol>
@@ -40,7 +33,7 @@
               representation matter. Empty strings are valid records.
             </p>
             <div class="actions">
-              <button id="build" class="primary">Rebuild tree →</button
+              <button id="build" class="primary">Rebuild tree</button
               ><button id="reset">Load example</button>
             </div>
           </details>
@@ -50,18 +43,29 @@
             <code id="tree-root">Computing…</code>
             <p class="help" id="tree-shape"></p>
             <div class="actions">
-              <button id="trust" disabled>Use this checkpoint →</button
-              ><button id="save-checkpoint" disabled>Export checkpoint ↓</button>
+              <button id="trust" disabled>Use this checkpoint</button
+              ><button id="save-checkpoint" disabled>Export checkpoint</button>
             </div>
             <p class="help">
               Rebuilding the tree does not replace the verifier’s trusted checkpoint.
             </p>
           </div>
         </section>
-        <section class="verifier">
+        <section class="verifier" id="verifier-view">
           <div class="section-heading">
-            <h2>02 / Check the claim</h2>
+            <h2>Inclusion proof</h2>
             <span id="proof-summary">—</span>
+          </div>
+          <div id="verdict" class="verdict pending">
+            <div class="stamp" id="stamp">—</div>
+            <div>
+              <h3 id="verdict-title">Preparing the example.</h3>
+              <p id="verdict-text"></p>
+            </div>
+          </div>
+          <div class="claim">
+            <span>Record</span>
+            <pre id="claim-record"></pre>
           </div>
           <form id="verify-form">
             <label for="trusted-root">Trusted root hash</label
@@ -97,20 +101,13 @@
               /></label>
               <p class="help">Importing a proof leaves the trusted root and size untouched.</p>
             </details>
-            <button id="verify" class="primary">Verify inclusion →</button>
+            <button id="verify" class="primary">Verify inclusion</button>
           </form>
-          <div id="verdict" class="verdict pending">
-            <div class="stamp" id="stamp">—</div>
-            <div>
-              <h3 id="verdict-title">Preparing the example.</h3>
-              <p id="verdict-text"></p>
-            </div>
-          </div>
           <p id="verify-notice" role="status" aria-live="polite"></p>
           <div class="actions proof-actions">
             <button id="tamper" disabled>Alter the leaf & verify</button
             ><button id="restore" disabled>Restore selected proof</button
-            ><button id="save-proof" disabled>Export proof ↓</button>
+            ><button id="save-proof" disabled>Export proof</button>
           </div>
           <details>
             <summary>Inspect the reconstructed hash path</summary>
@@ -118,8 +115,9 @@
           </details>
         </section>
       </div>
-      <section class="notes">
-        <h2>Membership is a claim.<br />Trust is a separate choice.</h2>
+      <details class="notes">
+        <summary>Hash construction &amp; verification limits</summary>
+
         <div>
           <p>
             Leaves hash as SHA-256(0x00 || UTF-8 record). Internal nodes hash as SHA-256(0x01 ||
@@ -138,11 +136,7 @@
           </p>
           <a href="https://www.rfc-editor.org/info/rfc6962/">Read the Merkle-tree definitions ↗</a>
         </div>
-      </section>
+      </details>
     </main>
-    <footer>
-      <span>EXACT BYTES. EXPLICIT TRUST.</span
-      ><span>Web Crypto · local computation · no uploads</span>
-    </footer>
   </body>
 </html>

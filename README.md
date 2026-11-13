@@ -4,6 +4,8 @@ A Merkle inclusion-proof workbench with a separate trusted checkpoint. Build a t
 
 ![Proof Parcel](docs/workbench.png)
 
+**Verify proof** shows the verification result and exact record before the trusted root and tree size. **Build tree** contains the record collection and checkpoint tools. Selecting a record opens its proof in the verifier without replacing the trusted checkpoint. Hash-path reconstruction and model details remain expandable.
+
 ## Run
 
 ```sh

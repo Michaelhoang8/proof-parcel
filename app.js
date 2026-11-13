@@ -20,11 +20,26 @@ function notice(id, text, error = false) {
   $(id).textContent = text;
   $(id).className = error ? 'error' : '';
 }
+function showView(view) {
+  for (const name of ['builder', 'verifier']) {
+    $(name + '-view').hidden = name !== view;
+    document
+      .querySelector(`[data-view="${name}"]`)
+      .setAttribute('aria-pressed', String(name === view));
+  }
+}
+for (const button of document.querySelectorAll('[data-view]'))
+  button.addEventListener('click', () => showView(button.dataset.view));
 function pending() {
+  try {
+    $('claim-record').textContent = parseProof($('proof').value).leaf || '(empty record)';
+  } catch {
+    $('claim-record').textContent = 'No valid proof record.';
+  }
   verifyVersion++;
   $('verdict').className = 'verdict pending';
   $('stamp').textContent = 'PENDING';
-  $('verdict-title').textContent = 'Ready for a fresh check.';
+  $('verdict-title').textContent = 'Verification pending';
   $('verdict-text').textContent =
     'Verify the current proof against the separate trusted root and size.';
   $('hash-path').replaceChildren();
@@ -112,9 +127,7 @@ async function verify() {
     $('proof-summary').textContent = `LEAF ${proof.index} / ${proof.size} RECORDS`;
     $('verdict').className = 'verdict ' + (result.valid ? 'valid' : 'invalid');
     $('stamp').textContent = result.valid ? 'MATCH' : 'NO MATCH';
-    $('verdict-title').textContent = result.valid
-      ? 'The record belongs.'
-      : 'The claim does not check out.';
+    $('verdict-title').textContent = result.valid ? 'Inclusion verified' : 'Inclusion failed';
     $('verdict-text').textContent = result.reason;
     $('hash-path').innerHTML = result.leafHash
       ? `<div class="hash-step"><h4>LEAF HASH</h4><code>${result.leafHash}</code></div>` +
@@ -151,9 +164,15 @@ $('reset').addEventListener('click', () => {
 });
 $('leaves').addEventListener('click', (event) => {
   const button = event.target.closest('button[data-index]');
-  if (button) selectLeaf(Number(button.dataset.index));
+  if (button) {
+    selectLeaf(Number(button.dataset.index));
+    showView('verifier');
+  }
 });
-$('trust').addEventListener('click', useCheckpoint);
+$('trust').addEventListener('click', () => {
+  useCheckpoint();
+  showView('verifier');
+});
 $('restore').addEventListener('click', () => {
   if (tree?.size) selectLeaf(selected);
 });
